@@ -1,4 +1,4 @@
-# EasyMVC-PHP
+# EasyMVC
 Simple and easy to use MVC for PHP.
 
 # Warning
