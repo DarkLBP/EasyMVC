@@ -1,0 +1,1 @@
+Put your models here. They should extends Core\Model.
