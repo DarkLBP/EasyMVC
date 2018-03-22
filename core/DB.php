@@ -29,6 +29,8 @@ abstract class DB
             case 'update':
             case 'delete':
                 return $prepared->rowCount();
+            case 'insert':
+                return $this->conection->lastInsertId();
             default:
                 return true;
         }
