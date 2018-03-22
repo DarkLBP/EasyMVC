@@ -57,6 +57,15 @@ abstract class Model extends DB
         return $this->query($query);
     }
 
+    public function insert($row)
+    {
+        $values = array_values($row);
+        $keys = array_keys($row);
+        $query = 'INSERT INTO ' . $this->getTable() . ' (`' . implode('`,`', $keys) . '`) 
+                    VALUES (' . implode(', ', array_fill(0, count($values), '?')) . ')';
+        return $this->query($query, $values);
+    }
+
     public function update($updates, $matches = [])
     {
         $updateKeys = array_keys($updates);
