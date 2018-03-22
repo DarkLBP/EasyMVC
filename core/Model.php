@@ -13,17 +13,33 @@ abstract class Model extends DB
         return $result;
     }
 
-    public function findAll(array $fields, array $values): array {
+    public function find(array $matches, int $limit = 0, int $begin = 0): array {
+        $keys = array_keys($matches);
+        $values = array_values($matches);
         $preparedChunks = [];
-        foreach ($fields as $field) {
-            $preparedChunks[] = $field . ' = ?';
+        foreach ($keys as $key) {
+            $preparedChunks[] = $key . ' = ?';
         }
-        $result = $this->query("SELECT * FROM " . $this->getTable() . " WHERE " . implode(' AND ', $preparedChunks), $values);
+        $query = "SELECT * FROM " . $this->getTable() . " WHERE " . implode(' AND ', $preparedChunks);
+        if ($limit != 0) {
+            $query .= " LIMIT $limit";
+            if ($begin != 0) {
+                $query .= " OFFSET $begin";
+            }
+        }
+        $result = $this->query($query, $values);
         return $result;
     }
 
-    public function getAll() {
-        $result = $this->query("SELECT * FROM " . $this->getTable());
+    public function findAll(int $limit = 0, int $begin = 0) {
+        $query = "SELECT * FROM " . $this->getTable();
+        if ($limit != 0) {
+            $query .= " LIMIT $limit";
+            if ($begin != 0) {
+                $query .= " OFFSET $begin";
+            }
+        }
+        $result = $this->query($query);
         return $result;
     }
 
