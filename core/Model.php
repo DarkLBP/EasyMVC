@@ -43,6 +43,27 @@ abstract class Model extends DB
         return $result;
     }
 
+    public function update($updates, $matches = []) {
+        $updateKeys = array_keys($updates);
+        $values = array_values($updates);
+        $updateChunks = [];
+        foreach ($updateKeys as $key) {
+            $updateChunks[] = $key . ' = ?';
+        }
+        $query = "UPDATE " . $this->getTable() . " SET " . implode(", ", $updateChunks);
+        if (!empty($matches)) {
+            $whereKeys = array_keys($matches);
+            $values = array_merge($values, array_values($matches));
+            $whereChunks = [];
+            foreach ($whereKeys as $key) {
+                $whereChunks[] = $key . ' = ?';
+            }
+
+            $query .= " WHERE " . implode(' AND ', $whereChunks);
+        }
+        $this->query($query, $values);
+    }
+
     private function getTable() {
         return Naming::getModelPseudo(get_called_class());
     }
