@@ -128,6 +128,15 @@ abstract class Model extends DB
      */
     private function getTable()
     {
-        return Naming::getModelPseudo(get_called_class());
+        $modelName = Naming::getModelPseudo(get_called_class());
+        $tableName = '';
+        for ($i = 0; $i < strlen($modelName); $i++){
+            if (ctype_upper($modelName[$i])) {
+                $tableName .= '_' . strtolower($modelName[$i]);
+            } else {
+                $tableName .= $modelName[$i];
+            }
+        }
+        return $tableName;
     }
 }

@@ -18,7 +18,7 @@ class Naming
     public static function getControllerPseudo($controller)
     {
         $fullControllerName = explode('\\', $controller)[1];
-        return strtolower(substr($fullControllerName, 0, strlen($fullControllerName) - 10));
+        return lcfirst(substr($fullControllerName, 0, strlen($fullControllerName) - 10));
     }
 
     public static function getModel($name)
@@ -29,6 +29,7 @@ class Naming
     public static function getModelPseudo($model)
     {
         $fullModelName = explode('\\', $model)[1];
-        return strtolower(substr($fullModelName, 0, strlen($fullModelName) - 5));
+
+        return lcfirst(substr($fullModelName, 0, strlen($fullModelName) - 5));
     }
 }
