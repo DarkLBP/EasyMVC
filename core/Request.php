@@ -1,4 +1,5 @@
 <?php
+
 namespace Core;
 
 use Core\Utils\Naming;
@@ -36,7 +37,8 @@ class Request
         }
     }
 
-    public function dispatch() {
+    public function dispatch()
+    {
         /**
          * @var $instance Controller
          */
@@ -54,15 +56,18 @@ class Request
         (new $defaultClass($this))->$defaultMethod();
     }
 
-    public function isPost(): bool {
+    public function isPost(): bool
+    {
         return $_SERVER["REQUEST_METHOD"] === "POST";
     }
 
-    public function isGet(): bool {
+    public function isGet(): bool
+    {
         return $_SERVER["REQUEST_METHOD"] === "GET";
     }
 
-    public function redirect($target) {
+    public function redirect($target)
+    {
         header("Location: $target");
         exit;
     }

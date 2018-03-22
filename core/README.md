@@ -1,1 +1,1 @@
-Rename Config.php.sample to Config.php and fill the database configuration
+Rename Config.sample.php to Config.php and fill the database configuration

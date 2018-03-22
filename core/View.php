@@ -5,7 +5,8 @@ namespace Core;
 
 class View
 {
-    public function __construct($view, $controller, $params) {
+    public function __construct($view, $controller, $params)
+    {
         extract($params);
         //If controller is specified check if that controller has the view if not try to load it in the root
         $headerView = __DIR__ . '/../views/' . $controller . '/HeaderView.php';
