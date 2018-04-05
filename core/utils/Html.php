@@ -74,6 +74,14 @@ class Html
         echo "<h$type>" . htmlspecialchars($text) . "</h$type>";
     }
 
+    public static function input(string $name, string $type = 'text', string $id = '', string $labelText = '')
+    {
+        if (!empty($labelText)) {
+            echo "<label for='$id'>$labelText</label>";
+        }
+        echo "<input type='$type' name='$name'" . (!empty($id) ? " id='$id'" : '') . '>';
+    }
+
     public static function image(string $src, string $alt = '')
     {
         echo "<img src='" . htmlspecialchars($src) . "' alt='" . htmlspecialchars($alt) . "'>";
