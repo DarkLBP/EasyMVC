@@ -54,6 +54,54 @@ class Request
         (new $defaultClass($this))->$defaultMethod();
     }
 
+    public function getGetParam(string $param, bool $trim = true): string
+    {
+        if (isset($_GET[$param])) {
+            if ($trim) {
+                return trim($_GET[$param]);
+            }
+            return $_GET[$param];
+        }
+        return '';
+    }
+
+    public function getPostParam(string $param, bool $trim = true): string
+    {
+        if (isset($_POST[$param])) {
+            if ($trim) {
+                return trim($_POST[$param]);
+            }
+            return $_POST[$param];
+        }
+        return '';
+    }
+
+    public function hasPostParam($params): bool
+    {
+        if (is_array($params)) {
+            foreach ($params as $param) {
+                if (empty($_POST[$param])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return !empty($_POST[$params]);
+    }
+
+    public function hasGetParam($params): bool
+    {
+        if (is_array($params)) {
+            foreach ($params as $param) {
+                if (empty($_GET[$param])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return !empty($_GET[$params]);
+    }
+
     public function isPost(): bool
     {
         return $_SERVER["REQUEST_METHOD"] === "POST";
