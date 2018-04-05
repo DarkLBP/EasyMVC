@@ -11,6 +11,7 @@ class Request
     public function __construct()
     {
         $request = trim($_SERVER["REQUEST_URI"], '/');
+        $request = explode("?", $request)[0];
         $requestSegments = explode("/", $request);
 
         if (!empty($requestSegments[0])) {
