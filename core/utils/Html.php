@@ -92,7 +92,7 @@ class Html
     public static function submit(string $text, string $name = '')
     {
         $name = !empty($name) ? " name = '" . htmlspecialchars($name) . "'" : "";
-        echo "<input type='submit'$name value='" . htmlspecialchars($text) . "'></input>";
+        echo "<input type='submit'$name value='" . htmlspecialchars($text) . "'>";
     }
 
     public static function meta($name, $content)
