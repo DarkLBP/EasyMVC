@@ -2,7 +2,6 @@
 
 namespace Core;
 
-
 abstract class DB
 {
     private $conection;

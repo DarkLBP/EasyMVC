@@ -2,7 +2,6 @@
 
 namespace Core;
 
-
 class View
 {
     public function __construct($view, $controller, $params)

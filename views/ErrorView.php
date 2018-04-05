@@ -1,2 +1,1 @@
-<?php
-echo '<h1>Invalid request</h1>';
+<h1>Invalid Request</h1>

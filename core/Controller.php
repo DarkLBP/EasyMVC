@@ -2,8 +2,6 @@
 
 namespace Core;
 
-use Core\Utils\Naming;
-
 abstract class Controller
 {
     protected $request;
