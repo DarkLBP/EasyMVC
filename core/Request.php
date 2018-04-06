@@ -52,7 +52,7 @@ class Request
         $errorView->show();
     }
 
-    public function getGetParam(string $param, bool $trim = true): string
+    public function getGetParam(string $param, bool $trim = false): string
     {
         if (!empty($_GET[$param])) {
             return $trim ? trim($_GET[$param]) : $_GET[$param];
@@ -60,7 +60,7 @@ class Request
         return '';
     }
 
-    public function getPostParam(string $param, bool $trim = true): string
+    public function getPostParam(string $param, bool $trim = false): string
     {
         if (!empty($_POST[$param])) {
             return $trim ? trim($_POST[$param]) : $_POST[$param];
@@ -68,7 +68,7 @@ class Request
         return '';
     }
 
-    public function getSessionParam(string $param, bool $trim = true)
+    public function getSessionParam(string $param, bool $trim = false)
     {
         if (!empty($_SESSION[$param])) {
             return $trim ? trim($_SESSION[$param]) : $_SESSION[$param];
