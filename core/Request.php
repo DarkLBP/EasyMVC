@@ -4,8 +4,8 @@ namespace Core;
 
 class Request
 {
-    private $controller = '';
-    private $action = '';
+    private $controller = DEFAULT_CONTROLLER;
+    private $action = DEFAULT_ACTION;
     private $actionParameters = [];
 
     public function __construct()
@@ -15,15 +15,11 @@ class Request
         $requestSegments = explode("/", $request);
 
         if (!empty($requestSegments[0])) {
-            $this->controller = Naming::getController($requestSegments[0]);
-        } else {
-            $this->controller = Naming::getController(DEFAULT_CONTROLLER);
+            $this->controller = $requestSegments[0];
         }
 
         if (!empty($requestSegments[1])) {
-            $this->action = Naming::getAction($requestSegments[1]);
-        } else {
-            $this->action = Naming::getAction(DEFAULT_ACTION);
+            $this->action = $requestSegments[1];
         }
 
         if (count($requestSegments) > 2) {
@@ -41,18 +37,19 @@ class Request
         /**
          * @var $instance Controller
          */
-        if (class_exists($this->controller)) {
-            $instance = new $this->controller($this);
-            if (method_exists($instance, $this->action)) {
-                $return = $instance->{$this->action}($this->actionParameters);
+        $controller = Naming::getController($this->controller);
+        $action = Naming::getAction($this->action);
+        if (class_exists($controller)) {
+            $instance = new $controller($this);
+            if (method_exists($instance, $action)) {
+                $return = $instance->{$action}($this->actionParameters);
                 if ($return !== false) {
                     return;
                 }
             }
         }
-        $defaultClass = Naming::getController(DEFAULT_CONTROLLER);
-        $defaultMethod = Naming::getAction("error");
-        (new $defaultClass($this))->$defaultMethod();
+        $errorView = new View('error');
+        $errorView->show();
     }
 
     public function getGetParam(string $param, bool $trim = true): string

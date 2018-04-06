@@ -18,7 +18,7 @@ abstract class Controller
      */
     protected function renderView($view = 'index', $params = [])
     {
-        new View($view, Naming::getControllerPseudo(get_called_class()), $params);
+        (new View($view, Naming::getControllerPseudo(get_called_class()), $params))->show();
     }
 
     protected function getModel(string $name): Model
