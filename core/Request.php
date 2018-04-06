@@ -68,10 +68,10 @@ class Request
         return '';
     }
 
-    public function getSessionParam(string $param, bool $trim = false)
+    public function getSessionParam(string $param)
     {
         if (!empty($_SESSION[$param])) {
-            return $trim ? trim($_SESSION[$param]) : $_SESSION[$param];
+            return $_SESSION[$param];
         }
         return '';
     }
