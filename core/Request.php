@@ -86,6 +86,11 @@ class Request
         return $_SERVER["REQUEST_METHOD"] === "GET";
     }
 
+    public function setSessionParam(string $param, $value)
+    {
+        $_SESSION[$param] = $value;
+    }
+
     public function redirect($target)
     {
         header("Location: $target");
