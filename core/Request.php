@@ -54,22 +54,24 @@ class Request
 
     public function getGetParam(string $param, bool $trim = true): string
     {
-        if (isset($_GET[$param])) {
-            if ($trim) {
-                return trim($_GET[$param]);
-            }
-            return $_GET[$param];
+        if (!empty($_GET[$param])) {
+            return $trim ? trim($_GET[$param]) : $_GET[$param];
         }
         return '';
     }
 
     public function getPostParam(string $param, bool $trim = true): string
     {
-        if (isset($_POST[$param])) {
-            if ($trim) {
-                return trim($_POST[$param]);
-            }
-            return $_POST[$param];
+        if (!empty($_POST[$param])) {
+            return $trim ? trim($_POST[$param]) : $_POST[$param];
+        }
+        return '';
+    }
+
+    public function getSessionParam(string $param, bool $trim = true)
+    {
+        if (!empty($_SESSION[$param])) {
+            return $trim ? trim($_SESSION[$param]) : $_SESSION[$param];
         }
         return '';
     }
