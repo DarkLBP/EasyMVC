@@ -25,11 +25,12 @@ abstract class Model extends DB
      * Retrieves a row from the database matching one condition
      * @param mixed $value The value requested
      * @param string $field The field where that value should match. Defaults to 'id'
+     * @param array $cols Columns to be retrieved
      * @return array|bool The first row that match or false in case of error
      */
-    public function findOne($value, string $field = 'id')
+    public function findOne($value, string $field = 'id', array $cols = [])
     {
-        $result = $this->find([$field => $value], 1);
+        $result = $this->find([$field => $value], $cols, 1);
         if (!empty($result)) {
             return $result[0];
         }
@@ -39,19 +40,21 @@ abstract class Model extends DB
     /**
      * Seeks for one or more rows matching the conditions
      * @param array $matches All the conditions that the rows must pass
+     * @param array $cols Columns to be retrieved
      * @param int $limit An optional limit of returned rows
      * @param int $begin An optional starting mark where the returned rows should start from
      * @return array|bool An array of rows or false in case of error
      */
-    public function find(array $matches, int $limit = 0, int $begin = 0)
+    public function find(array $matches, array $cols = [], int $limit = 0, int $begin = 0)
     {
+        $cols = empty($cols) ? '*' : implode(', ', $cols);
         $keys = array_keys($matches);
         $values = array_values($matches);
         $preparedChunks = [];
         foreach ($keys as $key) {
             $preparedChunks[] = $key . ' = ?';
         }
-        $query = "SELECT * FROM " . $this->getTable() . " WHERE " . implode(' AND ', $preparedChunks);
+        $query = "SELECT $cols FROM " . $this->getTable() . " WHERE " . implode(' AND ', $preparedChunks);
         if ($limit != 0) {
             $query .= " LIMIT $limit";
             if ($begin != 0) {
@@ -63,13 +66,15 @@ abstract class Model extends DB
 
     /**
      * Returns all rows from a table with an optional limit
+     * @param array $cols Columns to be retrieved
      * @param int $limit The number of rows to be retrieved. Default 0.
      * @param int $begin From which row should start to be retrieved. Default 0.
      * @return array|bool All matches or false in case of error
      */
-    public function findAll(int $limit = 0, int $begin = 0)
+    public function findAll(array $cols = [], int $limit = 0, int $begin = 0)
     {
-        $query = "SELECT * FROM " . $this->getTable();
+        $cols = empty($cols) ? '*' : implode(', ', $cols);
+        $query = "SELECT $cols FROM " . $this->getTable();
         if ($limit != 0) {
             $query .= " LIMIT $limit";
             if ($begin != 0) {
