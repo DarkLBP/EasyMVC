@@ -77,32 +77,6 @@ class Request
         return '';
     }
 
-    public function hasPostParam($params): bool
-    {
-        if (is_array($params)) {
-            foreach ($params as $param) {
-                if (empty($_POST[$param])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return !empty($_POST[$params]);
-    }
-
-    public function hasGetParam($params): bool
-    {
-        if (is_array($params)) {
-            foreach ($params as $param) {
-                if (empty($_GET[$param])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return !empty($_GET[$params]);
-    }
-
     public function isPost(): bool
     {
         return $_SERVER["REQUEST_METHOD"] === "POST";
