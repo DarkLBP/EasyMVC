@@ -13,7 +13,7 @@ abstract class Model extends DB
         parent::__construct();
         $modelName = Naming::getModelPseudo(get_called_class());
         $tableName = '';
-        for ($i = 0; $i < strlen($modelName); $i++){
+        for ($i = 0; $i < strlen($modelName); $i++) {
             if (ctype_upper($modelName[$i])) {
                 $tableName .= '_' . strtolower($modelName[$i]);
             } else {
@@ -23,13 +23,17 @@ abstract class Model extends DB
         $this->tableName = $tableName;
     }
 
-    public function buildJoin(bool $append = false): string
+    public function buildJoin(bool $append = false, array &$processed = []): string
     {
         /**
          * @var $model Model
          */
         if (empty($this->joins)) {
             return '';
+        } else if (in_array($this->tableName, $processed)) {
+            return '';
+        } else {
+            $processed[] = $this->tableName;
         }
         if (!$append) {
             $joinQuery = $this->tableName;
@@ -37,12 +41,12 @@ abstract class Model extends DB
             $joinQuery = '';
         }
         foreach ($this->joins as $join) {
-            $model =  $join['model'];
+            $model = $join['model'];
             $srcIndex = $join['srcIndex'];
             $targetIndex = $join['targetIndex'];
             $targetTable = $model->tableName;
             $joinQuery .= " INNER JOIN $targetTable ON $this->tableName.$srcIndex = $targetTable.$targetIndex "
-                . $model->buildJoin(true) . ' ';
+                . $model->buildJoin(true, $processed) . ' ';
         }
         return trim($joinQuery);
     }
