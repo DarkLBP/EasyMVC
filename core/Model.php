@@ -23,6 +23,12 @@ abstract class Model extends DB
         $this->tableName = $tableName;
     }
 
+    /**
+     * Generates a INNER JOIN query based of joined tables
+     * @param bool $append Whether should include the base table before the INNER JOIN keywords
+     * @param array $processed List of processed tables
+     * @return string The INNER JOIN query
+     */
     public function buildJoin(bool $append = false, array &$processed = []): string
     {
         /**
@@ -49,6 +55,22 @@ abstract class Model extends DB
                 . $model->buildJoin(true, $processed) . ' ';
         }
         return trim($joinQuery);
+    }
+
+    /**
+     * Count the number of rows matching the given conditions
+     * @param array $matches All the conditions that the rows must pass
+     * @param int $limit An optional limit of returned rows
+     * @param int $begin An optional starting mark where the returned rows should start from
+     * @return int An array of rows or false in case of error
+     */
+    public function count(array $matches = [], int $limit = 0, int $begin = 0): int
+    {
+        $result = $this->find($matches, [["COUNT(*)", "count"]], $limit, $begin);
+        if (isset($result[0])) {
+            return intval($result[0]['count']);
+        }
+        return -1;
     }
 
     /**
@@ -133,8 +155,8 @@ abstract class Model extends DB
     }
 
     /**
-     * Insert a row to the database
-     * @param array $row
+     * Inserts a row to the database
+     * @param array $row The row data
      * @return bool|string The id of the of the last insert or false in case of error
      */
     public function insert(array $row)
@@ -146,6 +168,12 @@ abstract class Model extends DB
         return $this->query($query, $values);
     }
 
+    /**
+     * Adds a model dependency for a INNER JOIN
+     * @param Model $model The instance of the model to be joined with
+     * @param string $srcIndex The column name of the current table
+     * @param string $targetIndex The column name of the joined table
+     */
     public function join(Model $model, string $srcIndex, string $targetIndex)
     {
         $this->joins[] = [
