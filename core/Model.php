@@ -24,10 +24,10 @@ abstract class Model extends DB
     }
 
     /**
-     * Generates a INNER JOIN query based of joined tables
-     * @param bool $append Whether should include the base table before the INNER JOIN keywords
+     * Generates a JOIN query based of joined tables
+     * @param bool $append Whether should include the base table before the JOIN keyword
      * @param array $processed List of processed tables
-     * @return string The INNER JOIN query
+     * @return string The JOIN query
      */
     public function buildJoin(bool $append = false, array &$processed = []): string
     {
@@ -46,13 +46,15 @@ abstract class Model extends DB
         } else {
             $joinQuery = '';
         }
-        foreach ($this->joins as $join) {
-            $model = $join['model'];
-            $srcIndex = $join['srcIndex'];
-            $targetIndex = $join['targetIndex'];
-            $targetTable = $model->tableName;
-            $joinQuery .= " INNER JOIN $targetTable ON $this->tableName.$srcIndex = $targetTable.$targetIndex "
-                . $model->buildJoin(true, $processed) . ' ';
+        foreach ($this->joins as $type => $joins) {
+            foreach ($joins as $join) {
+                $model = $join['model'];
+                $srcIndex = $join['srcIndex'];
+                $targetIndex = $join['targetIndex'];
+                $targetTable = $model->tableName;
+                $joinQuery .= " $type JOIN $targetTable ON $this->tableName.$srcIndex = $targetTable.$targetIndex "
+                    . $model->buildJoin(true, $processed) . ' ';
+            }
         }
         return trim($joinQuery);
     }
@@ -169,14 +171,19 @@ abstract class Model extends DB
     }
 
     /**
-     * Adds a model dependency for a INNER JOIN
+     * Adds a model dependency for a JOIN
+     * @param string $type Type of join
      * @param Model $model The instance of the model to be joined with
      * @param string $srcIndex The column name of the current table
      * @param string $targetIndex The column name of the joined table
      */
-    public function join(Model $model, string $srcIndex, string $targetIndex)
+    public function join(Model $model, string $srcIndex, string $targetIndex, string $type = '')
     {
-        $this->joins[] = [
+        if ($type == '') {
+            $type = 'INNER';
+        }
+        $type = strtoupper($type);
+        $this->joins[$type][] = [
             'model' => $model,
             'srcIndex' => $srcIndex,
             'targetIndex' => $targetIndex
