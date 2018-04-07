@@ -2,8 +2,51 @@
 
 namespace Core;
 
+
 abstract class Model extends DB
 {
+    private $joins = [];
+    public $tableName = '';
+
+    public function __construct()
+    {
+        parent::__construct();
+        $modelName = Naming::getModelPseudo(get_called_class());
+        $tableName = '';
+        for ($i = 0; $i < strlen($modelName); $i++){
+            if (ctype_upper($modelName[$i])) {
+                $tableName .= '_' . strtolower($modelName[$i]);
+            } else {
+                $tableName .= $modelName[$i];
+            }
+        }
+        $this->tableName = $tableName;
+    }
+
+    public function buildJoin(bool $append = false): string
+    {
+        /**
+         * @var $model Model
+         */
+        if (empty($this->joins)) {
+            return '';
+        }
+        if (!$append) {
+            $joinQuery = $this->tableName;
+        } else {
+            $joinQuery = '';
+        }
+        foreach ($this->joins as $join) {
+            $model =  $join['model'];
+            $srcIndex = $join['srcIndex'];
+            $targetIndex = $join['targetIndex'];
+            $targetTable = $model->tableName;
+            $joinQuery .= " INNER JOIN $targetTable ON $this->tableName.$srcIndex = $targetTable.$targetIndex "
+                . $model->buildJoin(true) . ' ';
+        }
+        return trim($joinQuery);
+    }
+
     /**
      * Removes all rows from the database that matches the conditions
      * @param array $matches The conditions the rows have to pass
@@ -17,7 +60,7 @@ abstract class Model extends DB
         foreach ($keys as $key) {
             $preparedChunks[] = $key . ' = ?';
         }
-        $result = $this->query("DELETE FROM " . $this->getTable() . " WHERE " . implode(' AND ', $preparedChunks), $values);
+        $result = $this->query("DELETE FROM " . $this->tableName . " WHERE " . implode(' AND ', $preparedChunks), $values);
         return $result;
     }
 
@@ -28,7 +71,7 @@ abstract class Model extends DB
      * @param array $cols Columns to be retrieved
      * @return array|bool The first row that match or false in case of error
      */
-    public function findOne($value, string $field = 'id', array $cols = [])
+    public function findOne($value, $field = 'id', array $cols = [])
     {
         $result = $this->find([$field => $value], $cols, 1);
         if (!empty($result)) {
@@ -45,16 +88,37 @@ abstract class Model extends DB
      * @param int $begin An optional starting mark where the returned rows should start from
      * @return array|bool An array of rows or false in case of error
      */
-    public function find(array $matches, array $cols = [], int $limit = 0, int $begin = 0)
+    public function find(array $matches = [], array $cols = [], int $limit = 0, int $begin = 0)
     {
-        $cols = empty($cols) ? '*' : implode(', ', $cols);
+        $colsStr = '';
+        if (!empty($cols)) {
+            foreach ($cols as $col) {
+                $colsStr .= ', ';
+                if (is_array($col)) {
+                    $colsStr .= "$col[0] AS '$col[1]'";
+                } else {
+                    $colsStr .= $col;
+                }
+            }
+            $colsStr = ltrim($colsStr, ', ');
+        } else {
+            $colsStr = '*';
+        }
         $keys = array_keys($matches);
         $values = array_values($matches);
         $preparedChunks = [];
         foreach ($keys as $key) {
             $preparedChunks[] = $key . ' = ?';
         }
-        $query = "SELECT $cols FROM " . $this->getTable() . " WHERE " . implode(' AND ', $preparedChunks);
+        $joinQuery = $this->buildJoin();
+        if (empty($joinQuery)) {
+            $query = "SELECT $colsStr FROM $this->tableName";
+        } else {
+            $query = "SELECT $colsStr FROM $joinQuery";
+        }
+        if (!empty($matches)) {
+            $query .= ' WHERE ' . implode(' AND ', $preparedChunks);
+        }
         if ($limit != 0) {
             $query .= " LIMIT $limit";
             if ($begin != 0) {
@@ -62,26 +126,6 @@ abstract class Model extends DB
             }
         }
         return $this->query($query, $values);
-    }
-
-    /**
-     * Returns all rows from a table with an optional limit
-     * @param array $cols Columns to be retrieved
-     * @param int $limit The number of rows to be retrieved. Default 0.
-     * @param int $begin From which row should start to be retrieved. Default 0.
-     * @return array|bool All matches or false in case of error
-     */
-    public function findAll(array $cols = [], int $limit = 0, int $begin = 0)
-    {
-        $cols = empty($cols) ? '*' : implode(', ', $cols);
-        $query = "SELECT $cols FROM " . $this->getTable();
-        if ($limit != 0) {
-            $query .= " LIMIT $limit";
-            if ($begin != 0) {
-                $query .= " OFFSET $begin";
-            }
-        }
-        return $this->query($query);
     }
 
     /**
@@ -93,9 +137,18 @@ abstract class Model extends DB
     {
         $values = array_values($row);
         $keys = array_keys($row);
-        $query = 'INSERT INTO ' . $this->getTable() . ' (`' . implode('`,`', $keys) . '`) 
+        $query = 'INSERT INTO ' . $this->tableName . ' (`' . implode('`,`', $keys) . '`) 
                     VALUES (' . implode(', ', array_fill(0, count($values), '?')) . ')';
         return $this->query($query, $values);
+    }
+
+    public function join(Model $model, string $srcIndex, string $targetIndex)
+    {
+        $this->joins[] = [
+            'model' => $model,
+            'srcIndex' => $srcIndex,
+            'targetIndex' => $targetIndex
+        ];
     }
 
     /**
@@ -112,7 +165,7 @@ abstract class Model extends DB
         foreach ($updateKeys as $key) {
             $updateChunks[] = $key . ' = ?';
         }
-        $query = "UPDATE " . $this->getTable() . " SET " . implode(", ", $updateChunks);
+        $query = "UPDATE " . $this->tableName . " SET " . implode(", ", $updateChunks);
         if (!empty($matches)) {
             $whereKeys = array_keys($matches);
             $values = array_merge($values, array_values($matches));
@@ -123,23 +176,5 @@ abstract class Model extends DB
             $query .= " WHERE " . implode(' AND ', $whereChunks);
         }
         return $this->query($query, $values);
-    }
-
-    /**
-     * Returns the name of the table using the model context
-     * @return string The name of the table
-     */
-    private function getTable()
-    {
-        $modelName = Naming::getModelPseudo(get_called_class());
-        $tableName = '';
-        for ($i = 0; $i < strlen($modelName); $i++){
-            if (ctype_upper($modelName[$i])) {
-                $tableName .= '_' . strtolower($modelName[$i]);
-            } else {
-                $tableName .= $modelName[$i];
-            }
-        }
-        return $tableName;
     }
 }
