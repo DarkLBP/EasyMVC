@@ -7,6 +7,7 @@ class Request
     private $controller = DEFAULT_CONTROLLER;
     private $action = DEFAULT_ACTION;
     private $actionParameters = [];
+    private $viewParams = [];
 
     public function __construct()
     {
@@ -50,6 +51,11 @@ class Request
         }
         $errorView = new View('error');
         $errorView->show();
+    }
+
+    public function getViewParams(): array
+    {
+        return $this->viewParams + $_SESSION;
     }
 
     public function getGetParam(string $param, bool $trim = false): string
@@ -107,6 +113,11 @@ class Request
     public function setSessionParam(string $param, $value)
     {
         $_SESSION[$param] = $value;
+    }
+
+    public function setViewParam(string $param, $value)
+    {
+        $this->viewParams[$param] = $value;
     }
 
     public function redirect($target)

@@ -14,12 +14,12 @@ abstract class Controller
     /**
      * Renders a view using the controller that triggered the method
      * @param string $view
-     * @param array $params
      */
-    protected function renderView($view = 'index', $params = [])
+    protected function renderView($view = 'index')
     {
-        $params['request'] = $this->request;
-        (new View($view, Naming::getControllerPseudo(get_called_class()), $params))->show();
+        $view = new View($view, Naming::getControllerPseudo(get_called_class()));
+        $view->setParams($this->request->getViewParams());
+        $view->show();
     }
 
     protected function getModel(string $name): Model

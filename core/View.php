@@ -9,9 +9,8 @@ class View
     private $contentFile = __DIR__ . '/../views/IndexView.php';
     private $footerFile = __DIR__ . '/../views/FooterView.php';
 
-    public function __construct(string $view, string $controller = '', array $params = [])
+    public function __construct(string $view, string $controller = '')
     {
-        $this->params = $params;
         //If controller is specified check if that controller has the view if not try to load it in the root
         $headerView = __DIR__ . '/../views/' . $controller . '/HeaderView.php';
         $contentView = __DIR__ . '/../views/' . $controller . '/' . ucfirst($view) . 'View.php';
@@ -30,6 +29,11 @@ class View
         if (file_exists($footerView)) {
             $this->footerFile = $footerView;
         }
+    }
+
+    public function setParams(array $params)
+    {
+        $this->params = $params;
     }
 
     public function show()
