@@ -18,6 +18,7 @@ abstract class Controller
      */
     protected function renderView($view = 'index', $params = [])
     {
+        $params['request'] = $this->request;
         (new View($view, Naming::getControllerPseudo(get_called_class()), $params))->show();
     }
 
