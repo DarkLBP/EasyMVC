@@ -58,6 +58,14 @@ class Request
         return $this->viewParams + $_SESSION;
     }
 
+    public function getCookieParam(string $param, bool $trim = false): string
+    {
+        if (isset($_COOKIE[$param])) {
+            return $trim ? trim($_COOKIE[$param]) : $_COOKIE[$param];
+        }
+        return '';
+    }
+
     public function getGetParam(string $param, bool $trim = false): string
     {
         if (!empty($_GET[$param])) {
@@ -108,6 +116,11 @@ class Request
     public function isGet(): bool
     {
         return $_SERVER["REQUEST_METHOD"] === "GET";
+    }
+
+    public function setCookieParam(string $param, $value, int $seconds)
+    {
+        setcookie($param, $value, $seconds);
     }
 
     public function setSessionParam(string $param, $value)
