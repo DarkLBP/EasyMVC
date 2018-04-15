@@ -53,6 +53,16 @@ class Request
         $errorView->show();
     }
 
+    public function getAction(): string
+    {
+        return $this->action;
+    }
+
+    public function getController(): string
+    {
+        return $this->controller;
+    }
+
     public function getViewParams(): array
     {
         return $this->viewParams + $_SESSION;
