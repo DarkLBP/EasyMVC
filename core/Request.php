@@ -110,13 +110,17 @@ class Request
         return $_SERVER["REQUEST_METHOD"] === "GET";
     }
 
-    public function setCookieParam(string $param, $value, int $seconds)
+    public function setCookieParam(string $param, $value, int $seconds = 3600, string $path = '/')
     {
-        setcookie($param, $value, $seconds);
+        setcookie($param, $value, $seconds, $path);
     }
 
     public function setSessionParam(string $param, $value)
     {
+        if ($value === null) {
+            unset($_SESSION[$param]);
+            return;
+        }
         $_SESSION[$param] = $value;
     }
 
