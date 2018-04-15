@@ -65,7 +65,7 @@ class Request
 
     public function getViewParams(): array
     {
-        return $this->viewParams + $_SESSION;
+        return $this->viewParams;
     }
 
     public function getCookieParam(string $param, bool $trim = false): string
