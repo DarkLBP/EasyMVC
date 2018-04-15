@@ -50,6 +50,7 @@ class Request
             }
         }
         $errorView = new View('error');
+        $errorView->setParams($this->viewParams);
         $errorView->show();
     }
 
