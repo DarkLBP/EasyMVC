@@ -20,6 +20,7 @@ abstract class Controller
         $view = new View($view, Naming::getControllerPseudo(get_called_class()));
         $view->setParams($this->request->getViewParams());
         $view->show();
+        exit;
     }
 
     protected function getModel(string $name): Model
