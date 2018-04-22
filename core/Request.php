@@ -93,6 +93,11 @@ class Request
         return '';
     }
 
+    public function getSentFile(string $file): array
+    {
+        return !empty($_FILES[$file]) ? $_FILES[$file] : [];
+    }
+
     public function getSessionParam(string $param)
     {
         if (!empty($_SESSION[$param])) {
