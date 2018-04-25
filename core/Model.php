@@ -153,9 +153,9 @@ abstract class Model extends DB
         if (!empty($orderBy)) {
             $orderStr .= ' ORDER BY ';
             foreach ($orderBy as $column => $order) {
-                $orderStr .= $column . ' ' . $order . ',';
+                $orderStr .= $column . ' ' . $order . ', ';
             }
-            $orderStr = rtrim($orderStr, ',');
+            $orderStr = rtrim($orderStr, ', ');
             $query .= $orderStr;
         }
         if ($limit != 0) {
