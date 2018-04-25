@@ -149,9 +149,8 @@ abstract class Model extends DB
         if (!empty($matches)) {
             $query .= ' WHERE ' . implode(' AND ', $preparedChunks);
         }
-        $orderStr = '';
         if (!empty($orderBy)) {
-            $orderStr .= ' ORDER BY ';
+            $orderStr = ' ORDER BY ';
             foreach ($orderBy as $column => $order) {
                 $orderStr .= $column . ' ' . $order . ', ';
             }
