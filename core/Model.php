@@ -6,7 +6,7 @@ namespace Core;
 abstract class Model extends DB
 {
     private $joins = [];
-    public $tableName = '';
+    private $tableName = '';
 
     public function __construct()
     {
@@ -21,6 +21,11 @@ abstract class Model extends DB
             }
         }
         $this->tableName = $tableName;
+    }
+
+    public function __toString(): string
+    {
+        return $this->tableName;
     }
 
     /**
