@@ -97,11 +97,12 @@ abstract class Model extends DB
      * @param mixed $value The value requested
      * @param string $field The field where that value should match. Defaults to 'id'
      * @param array $cols Columns to be retrieved
+     * @param array $orderBy The order of the results before limiting
      * @return array|bool The first row that match or false in case of error
      */
-    public function findOne($value, $field = 'id', array $cols = [])
+    public function findOne($value, $field = 'id', array $cols = [], array $orderBy = [])
     {
-        $result = $this->find([$field => $value], $cols, 1);
+        $result = $this->find([$field => $value], $cols, $orderBy, 1);
         if (!empty($result)) {
             return $result[0];
         }
@@ -112,11 +113,12 @@ abstract class Model extends DB
      * Seeks for one or more rows matching the conditions
      * @param array $matches All the conditions that the rows must pass
      * @param array $cols Columns to be retrieved
+     * @param array $orderBy The order of the results before applying limits
      * @param int $limit An optional limit of returned rows
      * @param int $begin An optional starting mark where the returned rows should start from
      * @return array|bool An array of rows or false in case of error
      */
-    public function find(array $matches = [], array $cols = [], int $limit = 0, int $begin = 0)
+    public function find(array $matches = [], array $cols = [], array $orderBy = [], int $limit = 0, int $begin = 0)
     {
         $colsStr = '';
         if (!empty($cols)) {
@@ -146,6 +148,15 @@ abstract class Model extends DB
         }
         if (!empty($matches)) {
             $query .= ' WHERE ' . implode(' AND ', $preparedChunks);
+        }
+        $orderStr = '';
+        if (!empty($orderBy)) {
+            $orderStr .= ' ORDER BY ';
+            foreach ($orderBy as $column => $order) {
+                $orderStr .= $column . ' ' . $order . ',';
+            }
+            $orderStr = rtrim($orderStr, ',');
+            $query .= $orderStr;
         }
         if ($limit != 0) {
             $query .= " LIMIT $limit";
