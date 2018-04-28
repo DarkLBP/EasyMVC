@@ -101,7 +101,7 @@ class Request
     /**
      * Returns the requested get param value
      * @param string $param Param name
-     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @param bool $trim If you want to trim that value. Only applies to strings.
      * @return string | array The get param value
      */
     public function getGetParam(string $param, bool $trim = false)
@@ -119,7 +119,7 @@ class Request
     /**
      * Returns the requested post param value
      * @param string $param Param name
-     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @param bool $trim If you want to trim that value. Only applies to strings.
      * @return string | array The post param value
      */
     public function getPostParam(string $param, bool $trim = false)
@@ -137,7 +137,7 @@ class Request
     /**
      * Returns the requested view param value
      * @param string $param Param name
-     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @param bool $trim If you want to trim that value. Only applies to strings.
      * @return mixed The view param value
      */
     public function getViewParam(string $param, bool $trim = false)
@@ -208,7 +208,7 @@ class Request
     /**
      * Sets a session param
      * @param string $param Param name
-     * @param mixed $value Param value
+     * @param mixed $value Param value. If not set the param will be removed.
      */
     public function setSessionParam(string $param, $value = null): void
     {
@@ -222,7 +222,7 @@ class Request
     /**
      * Sets a param to be sent to the view
      * @param string $param Param name
-     * @param mixed $value Param value
+     * @param mixed $value Param value. If not set the param will be removed.
      */
     public function setViewParam(string $param, $value = null): void
     {
