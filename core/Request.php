@@ -99,7 +99,7 @@ class Request
     }
 
     /**
-     * Returns the request get param value
+     * Returns the requested get param value
      * @param string $param Param name
      * @param bool $trim If you want to trim that value. Only applies to strings
      * @return string | array The get param value
@@ -117,7 +117,7 @@ class Request
     }
 
     /**
-     * Returns the request post param value
+     * Returns the requested post param value
      * @param string $param Param name
      * @param bool $trim If you want to trim that value. Only applies to strings
      * @return string | array The post param value
@@ -126,6 +126,24 @@ class Request
     {
         if (!empty($_POST[$param])) {
             $value = $_POST[$param];
+            if (is_string($value) && $trim) {
+                return trim($value);
+            }
+            return $value;
+        }
+        return '';
+    }
+
+    /**
+     * Returns the requested view param value
+     * @param string $param Param name
+     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @return mixed The view param value
+     */
+    public function getViewParam(string $param, bool $trim = false)
+    {
+        if (!empty($this->viewParams[$param])) {
+            $value = $this->viewParams[$param];
             if (is_string($value) && $trim) {
                 return trim($value);
             }
@@ -192,7 +210,7 @@ class Request
      * @param string $param Param name
      * @param mixed $value Param value
      */
-    public function setSessionParam(string $param, $value): void
+    public function setSessionParam(string $param, $value = null): void
     {
         if ($value === null) {
             unset($_SESSION[$param]);
@@ -206,8 +224,12 @@ class Request
      * @param string $param Param name
      * @param mixed $value Param value
      */
-    public function setViewParam(string $param, $value): void
+    public function setViewParam(string $param, $value = null): void
     {
+        if ($value === null) {
+            unset($this->viewParams[$param]);
+            return;
+        }
         $this->viewParams[$param] = $value;
     }
 
