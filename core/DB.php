@@ -14,6 +14,12 @@ abstract class DB
         );
     }
 
+    /**
+     * Performs a query on the database
+     * @param string $query The query to be ran
+     * @param array $params The query params
+     * @return array|bool|int|string The result
+     */
     protected function query(string $query, array $params = [])
     {
         $prepared = $this->conection->prepare($query);

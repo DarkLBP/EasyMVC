@@ -23,6 +23,11 @@ abstract class Controller
         exit;
     }
 
+    /**
+     * Returns a model instance
+     * @param string $name Name of the model
+     * @return Model The model instance
+     */
     protected function getModel(string $name): Model
     {
         $modelName = Naming::getModel($name);

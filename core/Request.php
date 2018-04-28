@@ -33,6 +33,9 @@ class Request
         }
     }
 
+    /**
+     * Forwards the request to the proper controller and action
+     */
     public function dispatch()
     {
         /**
@@ -54,21 +57,39 @@ class Request
         $errorView->show();
     }
 
+    /**
+     * Gets the action name
+     * @return string The action name
+     */
     public function getAction(): string
     {
         return $this->action;
     }
 
+    /**
+     * Gets the target controller name
+     * @return string The controller name
+     */
     public function getController(): string
     {
         return $this->controller;
     }
 
+    /**
+     * Returns all view params
+     * @return array An array with all params and values
+     */
     public function getViewParams(): array
     {
         return $this->viewParams;
     }
 
+    /**
+     * Returns a cookie value
+     * @param string $param Cookie name
+     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @return string The cookie value
+     */
     public function getCookieParam(string $param, bool $trim = false): string
     {
         if (isset($_COOKIE[$param])) {
@@ -77,6 +98,12 @@ class Request
         return '';
     }
 
+    /**
+     * Returns the request get param value
+     * @param string $param Param name
+     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @return string | array The get param value
+     */
     public function getGetParam(string $param, bool $trim = false): string
     {
         if (!empty($_GET[$param])) {
@@ -85,6 +112,12 @@ class Request
         return '';
     }
 
+    /**
+     * Returns the request post param value
+     * @param string $param Param name
+     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @return string | array The post param value
+     */
     public function getPostParam(string $param, bool $trim = false): string
     {
         if (!empty($_POST[$param])) {
@@ -93,11 +126,21 @@ class Request
         return '';
     }
 
+    /**
+     * Returns an uploaded file
+     * @param string $file File index
+     * @return array Files or file data
+     */
     public function getSentFile(string $file): array
     {
         return !empty($_FILES[$file]) ? $_FILES[$file] : [];
     }
 
+    /**
+     * Returns a session param
+     * @param string $param The requested param
+     * @return mixed The session param value or an empty string if not found
+     */
     public function getSessionParam(string $param)
     {
         if (!empty($_SESSION[$param])) {
@@ -106,21 +149,41 @@ class Request
         return '';
     }
 
+    /**
+     * Returns whether the request uses the POST method
+     * @return bool If it is POST
+     */
     public function isPost(): bool
     {
         return $_SERVER["REQUEST_METHOD"] === "POST";
     }
 
+    /**
+     * Returns whether the request uses the GET method
+     * @return bool If it is GET
+     */
     public function isGet(): bool
     {
         return $_SERVER["REQUEST_METHOD"] === "GET";
     }
 
+    /**
+     * Generates a cookie
+     * @param string $param Param name
+     * @param mixed $value Param value
+     * @param int $seconds Number of seconds of live
+     * @param string $path Path where this cookie will be used
+     */
     public function setCookieParam(string $param, $value, int $seconds = 3600, string $path = '/')
     {
         setcookie($param, $value, $seconds, $path);
     }
 
+    /**
+     * Sets a session param
+     * @param string $param Param name
+     * @param mixed $value Param value
+     */
     public function setSessionParam(string $param, $value)
     {
         if ($value === null) {
@@ -130,12 +193,21 @@ class Request
         $_SESSION[$param] = $value;
     }
 
+    /**
+     * Sets a param to be sent to the view
+     * @param string $param Param name
+     * @param mixed $value Param value
+     */
     public function setViewParam(string $param, $value)
     {
         $this->viewParams[$param] = $value;
     }
 
-    public function redirect($target)
+    /**
+     * Redirects the request to another URL
+     * @param string $target The target URL
+     */
+    public function redirect(string $target)
     {
         header("Location: $target");
         exit;

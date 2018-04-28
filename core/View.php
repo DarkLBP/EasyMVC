@@ -31,11 +31,18 @@ class View
         }
     }
 
+    /**
+     * Sets an array of params to be passed to the view
+     * @param array $params The array of params
+     */
     public function setParams(array $params)
     {
         $this->params = $params;
     }
 
+    /**
+     * Renders the full view
+     */
     public function show()
     {
         extract($this->params);
