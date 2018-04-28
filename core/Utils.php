@@ -27,4 +27,14 @@ class Utils {
         }
         return $url;
     }
+
+    /**
+     * Escapes the given data for HTML printing
+     * @param string $data The data to be escaped
+     * @return string The escaped string
+     */
+    public static function escapeData(string $data): string
+    {
+        return htmlspecialchars($data);
+    }
 }
