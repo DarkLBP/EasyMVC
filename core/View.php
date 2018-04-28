@@ -35,7 +35,7 @@ class View
      * Sets an array of params to be passed to the view
      * @param array $params The array of params
      */
-    public function setParams(array $params)
+    public function setParams(array $params): void
     {
         $this->params = $params;
     }
@@ -43,7 +43,7 @@ class View
     /**
      * Renders the full view
      */
-    public function show()
+    public function show(): void
     {
         extract($this->params);
         include_once $this->headerFile;

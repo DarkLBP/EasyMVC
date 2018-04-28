@@ -36,7 +36,7 @@ class Request
     /**
      * Forwards the request to the proper controller and action
      */
-    public function dispatch()
+    public function dispatch(): void
     {
         /**
          * @var $instance Controller
@@ -87,7 +87,7 @@ class Request
     /**
      * Returns a cookie value
      * @param string $param Cookie name
-     * @param bool $trim If you want to trim that value. Only applies to strings
+     * @param bool $trim If you want to trim that value
      * @return string The cookie value
      */
     public function getCookieParam(string $param, bool $trim = false): string
@@ -104,10 +104,14 @@ class Request
      * @param bool $trim If you want to trim that value. Only applies to strings
      * @return string | array The get param value
      */
-    public function getGetParam(string $param, bool $trim = false): string
+    public function getGetParam(string $param, bool $trim = false)
     {
         if (!empty($_GET[$param])) {
-            return $trim ? trim($_GET[$param]) : $_GET[$param];
+            $value = $_GET[$param];
+            if (is_string($value) && $trim) {
+                return trim($value);
+            }
+            return $value;
         }
         return '';
     }
@@ -118,10 +122,14 @@ class Request
      * @param bool $trim If you want to trim that value. Only applies to strings
      * @return string | array The post param value
      */
-    public function getPostParam(string $param, bool $trim = false): string
+    public function getPostParam(string $param, bool $trim = false)
     {
         if (!empty($_POST[$param])) {
-            return $trim ? trim($_POST[$param]) : $_POST[$param];
+            $value = $_POST[$param];
+            if (is_string($value) && $trim) {
+                return trim($value);
+            }
+            return $value;
         }
         return '';
     }
@@ -174,7 +182,7 @@ class Request
      * @param int $seconds Number of seconds of live
      * @param string $path Path where this cookie will be used
      */
-    public function setCookieParam(string $param, $value, int $seconds = 3600, string $path = '/')
+    public function setCookieParam(string $param, $value, int $seconds = 3600, string $path = '/'): void
     {
         setcookie($param, $value, $seconds, $path);
     }
@@ -184,7 +192,7 @@ class Request
      * @param string $param Param name
      * @param mixed $value Param value
      */
-    public function setSessionParam(string $param, $value)
+    public function setSessionParam(string $param, $value): void
     {
         if ($value === null) {
             unset($_SESSION[$param]);
@@ -198,7 +206,7 @@ class Request
      * @param string $param Param name
      * @param mixed $value Param value
      */
-    public function setViewParam(string $param, $value)
+    public function setViewParam(string $param, $value): void
     {
         $this->viewParams[$param] = $value;
     }
@@ -207,7 +215,7 @@ class Request
      * Redirects the request to another URL
      * @param string $target The target URL
      */
-    public function redirect(string $target)
+    public function redirect(string $target): void
     {
         header("Location: $target");
         exit;

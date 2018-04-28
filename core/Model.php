@@ -192,7 +192,7 @@ abstract class Model extends DB
      * @param string $srcIndex The column name of the current table
      * @param string $targetIndex The column name of the joined table
      */
-    public function join(Model $model, string $srcIndex, string $targetIndex, string $type = '')
+    public function join(Model $model, string $srcIndex, string $targetIndex, string $type = ''): void
     {
         if ($type == '') {
             $type = 'INNER';
