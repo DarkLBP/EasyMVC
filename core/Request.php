@@ -239,7 +239,19 @@ class Request
      */
     public function redirect(string $target): void
     {
-        header("Location: $target");
+        $this->setHeader('Location', $target);
         exit;
+    }
+
+    /**
+     * Sets a header
+     * @param string $name The name of the header
+     * @param string $value The value of the header
+     */
+    public function setHeader(string $name, string $value)
+    {
+        if (!headers_sent()) {
+            header("$name: $value");
+        }
     }
 }
