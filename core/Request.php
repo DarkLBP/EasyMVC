@@ -152,6 +152,20 @@ class Request
         return '';
     }
 
+    public function getRequestHeader(string $headerName)
+    {
+        foreach($_SERVER as $key => $value) {
+            if (substr($key, 0, 5) != 'HTTP_') {
+                continue;
+            }
+            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+            if (strtolower($header) == strtolower($headerName)) {
+                return $value;
+            }
+        }
+        return '';
+    }
+
     /**
      * Returns an uploaded file
      * @param string $file File index
@@ -239,7 +253,7 @@ class Request
      */
     public function redirect(string $target): void
     {
-        $this->setHeader('Location', $target);
+        $this->setResponseHeader('Location', $target);
         exit;
     }
 
@@ -248,7 +262,7 @@ class Request
      * @param string $name The name of the header
      * @param string $value The value of the header
      */
-    public function setHeader(string $name, string $value)
+    public function setResponseHeader(string $name, string $value)
     {
         if (!headers_sent()) {
             header("$name: $value");
