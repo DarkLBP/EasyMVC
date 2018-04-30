@@ -273,7 +273,6 @@ abstract class Model extends DB
         }
         $query = "UPDATE " . $this->tableName . " SET " . implode(", ", $updateChunks);
         if (!empty($matches)) {
-            $values = [];
             $preparedChunks = [];
             foreach ($matches as $column => $value) {
                 if (is_array($value)) {
