@@ -87,13 +87,41 @@ abstract class Model extends DB
      */
     public function delete(array $matches)
     {
-        $keys = array_keys($matches);
-        $values = array_values($matches);
-        $preparedChunks = [];
-        foreach ($keys as $key) {
-            $preparedChunks[] = $key . ' = ?';
+        $query = "DELETE FROM " . $this->tableName;
+        $values = [];
+        if (!empty($matches)) {
+            $values = [];
+            $preparedChunks = [];
+            foreach ($matches as $column => $value) {
+                if (is_array($value)) {
+                    if (count($value) === 1) {
+                        if (isset($value[0])) {
+                            $preparedChunks[] = "$column LIKE ?";
+                            $values[] = $value[0];
+                        } else {
+                            $key = array_keys($value)[0];
+                            $preparedChunks[] = "$column BETWEEN ? AND ?";
+                            $values[] = $key;
+                            $values[] = $value[$key];
+                        }
+                    } else {
+                        $inClause = '(';
+                        foreach ($value as $columnValue) {
+                            $inClause .= '?, ';
+                            $values[] = $columnValue;
+                        }
+                        $inClause = rtrim($inClause, ', ');
+                        $inClause .= ')';
+                        $preparedChunks[] =  "$column IN $inClause";
+                    }
+                } else {
+                    $preparedChunks[] = $column . ' = ?';
+                    $values[] = $value;
+                }
+            }
+            $query .= " WHERE " . implode(' AND ', $preparedChunks);
         }
-        $result = $this->query("DELETE FROM " . $this->tableName . " WHERE " . implode(' AND ', $preparedChunks), $values);
+        $result = $this->query($query, $values);
         return $result;
     }
 
@@ -128,22 +156,17 @@ abstract class Model extends DB
         $colsStr = '';
         if (!empty($cols)) {
             foreach ($cols as $col) {
-                $colsStr .= ', ';
                 if (is_array($col)) {
-                    $colsStr .= "$col[0] AS '$col[1]'";
+                    foreach ($col as $name => $alias) {
+                        $colsStr .= ", $name AS '$alias'";
+                    }
                 } else {
-                    $colsStr .= $col;
+                    $colsStr .= ', ' . $col;
                 }
             }
             $colsStr = ltrim($colsStr, ', ');
         } else {
             $colsStr = '*';
-        }
-        $keys = array_keys($matches);
-        $values = array_values($matches);
-        $preparedChunks = [];
-        foreach ($keys as $key) {
-            $preparedChunks[] = $key . ' = ?';
         }
         $joinQuery = $this->buildJoin();
         if (empty($joinQuery)) {
@@ -151,7 +174,36 @@ abstract class Model extends DB
         } else {
             $query = "SELECT $colsStr FROM $joinQuery";
         }
+        $values = [];
         if (!empty($matches)) {
+            $preparedChunks = [];
+            foreach ($matches as $column => $value) {
+                if (is_array($value)) {
+                    if (count($value) === 1) {
+                        if (isset($value[0])) {
+                            $preparedChunks[] = "$column LIKE ?";
+                            $values[] = $value[0];
+                        } else {
+                            $key = array_keys($value)[0];
+                            $preparedChunks[] = "$column BETWEEN ? AND ?";
+                            $values[] = $key;
+                            $values[] = $value[$key];
+                        }
+                    } else {
+                        $inClause = '(';
+                        foreach ($value as $columnValue) {
+                            $inClause .= '?, ';
+                            $values[] = $columnValue;
+                        }
+                        $inClause = rtrim($inClause, ', ');
+                        $inClause .= ')';
+                        $preparedChunks[] =  "$column IN $inClause";
+                    }
+                } else {
+                    $preparedChunks[] = $column . ' = ?';
+                    $values[] = $value;
+                }
+            }
             $query .= ' WHERE ' . implode(' AND ', $preparedChunks);
         }
         if (!empty($orderBy)) {
@@ -221,13 +273,36 @@ abstract class Model extends DB
         }
         $query = "UPDATE " . $this->tableName . " SET " . implode(", ", $updateChunks);
         if (!empty($matches)) {
-            $whereKeys = array_keys($matches);
-            $values = array_merge($values, array_values($matches));
-            $whereChunks = [];
-            foreach ($whereKeys as $key) {
-                $whereChunks[] = $key . ' = ?';
+            $values = [];
+            $preparedChunks = [];
+            foreach ($matches as $column => $value) {
+                if (is_array($value)) {
+                    if (count($value) === 1) {
+                        if (isset($value[0])) {
+                            $preparedChunks[] = "$column LIKE ?";
+                            $values[] = $value[0];
+                        } else {
+                            $key = array_keys($value)[0];
+                            $preparedChunks[] = "$column BETWEEN ? AND ?";
+                            $values[] = $key;
+                            $values[] = $value[$key];
+                        }
+                    } else {
+                        $inClause = '(';
+                        foreach ($value as $columnValue) {
+                            $inClause .= '?, ';
+                            $values[] = $columnValue;
+                        }
+                        $inClause = rtrim($inClause, ', ');
+                        $inClause .= ')';
+                        $preparedChunks[] =  "$column IN $inClause";
+                    }
+                } else {
+                    $preparedChunks[] = $column . ' = ?';
+                    $values[] = $value;
+                }
             }
-            $query .= " WHERE " . implode(' AND ', $whereChunks);
+            $query .= " WHERE " . implode(' AND ', $preparedChunks);
         }
         return $this->query($query, $values);
     }
