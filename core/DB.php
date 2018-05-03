@@ -10,7 +10,8 @@ abstract class DB
     {
         $this->conection = new \PDO('mysql:host=' . DATABASE_HOST . ';dbname=' . DATABASE_DB,
             DATABASE_USER,
-            DATABASE_PASSWORD
+            DATABASE_PASSWORD,
+            [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
         );
     }
 
