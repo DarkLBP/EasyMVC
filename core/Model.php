@@ -73,7 +73,7 @@ abstract class Model extends DB
      */
     public function count(array $matches = [], int $limit = 0, int $begin = 0): int
     {
-        $result = $this->find($matches, [["COUNT(*)", "count"]], [], [], $limit, $begin);
+        $result = $this->find($matches, [["COUNT(*)" => "count"]], [], [], $limit, $begin);
         if (isset($result[0])) {
             return intval($result[0]['count']);
         }
