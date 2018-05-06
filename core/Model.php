@@ -58,7 +58,7 @@ abstract class Model extends DB
                 $targetIndex = $join['targetIndex'];
                 $targetTable = $model->tableName;
                 $tableAlias = $join['tableAlias'];
-                if (empty($tableAlias)) {
+                if (!empty($tableAlias)) {
                     $joinQuery .= " $type JOIN $targetTable AS $tableAlias ON $this->tableName.$srcIndex = $tableAlias.$targetIndex "
                         . $model->buildJoin(true, $processed) . ' ';
                 } else {
