@@ -146,12 +146,13 @@ abstract class Model extends DB
      * Seeks for one or more rows matching the conditions
      * @param array $matches All the conditions that the rows must pass
      * @param array $cols Columns to be retrieved
+     * @param array $groupBy Columns to be grouped
      * @param array $orderBy The order of the results before applying limits
      * @param int $limit An optional limit of returned rows
      * @param int $begin An optional starting mark where the returned rows should start from
      * @return array|bool An array of rows or false in case of error
      */
-    public function find(array $matches = [], array $cols = [], array $orderBy = [], int $limit = 0, int $begin = 0)
+    public function find(array $matches = [], array $cols = [], array $groupBy = [], array $orderBy = [], int $limit = 0, int $begin = 0)
     {
         $colsStr = '';
         if (!empty($cols)) {
@@ -205,6 +206,9 @@ abstract class Model extends DB
                 }
             }
             $query .= ' WHERE ' . implode(' AND ', $preparedChunks);
+        }
+        if (!empty($groupBy)) {
+            $query .= ' GROUP BY ' . implode(', ', $groupBy);
         }
         if (!empty($orderBy)) {
             $orderStr = ' ORDER BY ';
