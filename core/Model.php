@@ -57,8 +57,14 @@ abstract class Model extends DB
                 $srcIndex = $join['srcIndex'];
                 $targetIndex = $join['targetIndex'];
                 $targetTable = $model->tableName;
-                $joinQuery .= " $type JOIN $targetTable ON $this->tableName.$srcIndex = $targetTable.$targetIndex "
-                    . $model->buildJoin(true, $processed) . ' ';
+                $tableAlias = $join['tableAlias'];
+                if (empty($tableAlias)) {
+                    $joinQuery .= " $type JOIN $targetTable AS $tableAlias ON $this->tableName.$srcIndex = $tableAlias.$targetIndex "
+                        . $model->buildJoin(true, $processed) . ' ';
+                } else {
+                    $joinQuery .= " $type JOIN $targetTable ON $this->tableName.$srcIndex = $targetTable.$targetIndex "
+                        . $model->buildJoin(true, $processed) . ' ';
+                }
             }
         }
         return trim($joinQuery);
@@ -243,12 +249,13 @@ abstract class Model extends DB
 
     /**
      * Adds a model dependency for a JOIN
-     * @param string $type Type of join
      * @param Model $model The instance of the model to be joined with
      * @param string $srcIndex The column name of the current table
      * @param string $targetIndex The column name of the joined table
+     * @param string $type Type of join
+     * @param string $tableAlias Alias to be applied to the table
      */
-    public function join(Model $model, string $srcIndex, string $targetIndex, string $type = ''): void
+    public function join(Model $model, string $srcIndex, string $targetIndex, string $type = '', string $tableAlias = ''): void
     {
         if ($type == '') {
             $type = 'INNER';
@@ -257,7 +264,8 @@ abstract class Model extends DB
         $this->joins[$type][] = [
             'model' => $model,
             'srcIndex' => $srcIndex,
-            'targetIndex' => $targetIndex
+            'targetIndex' => $targetIndex,
+            'tableAlias' => $tableAlias
         ];
     }
 
