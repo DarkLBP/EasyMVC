@@ -1,12 +1,10 @@
 <?php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+
+define("SITE_TITLE", "Ticket Composer");
 define("DEFAULT_CONTROLLER", "main");
 define("DEFAULT_ACTION", "index");
-define("DATABASE_HOST", "localhost");
-define("DATABASE_USER", "");
-define("DATABASE_PASSWORD", "");
-define("DATABASE_DB", "");
 
 spl_autoload_register(function ($class) {
     $segments = explode("\\", $class);
@@ -19,3 +17,9 @@ spl_autoload_register(function ($class) {
         include_once $finalPath;
     }
 });
+
+//define("DATABASE_HOST", "localhost");
+//define("DATABASE_USER", "");
+//define("DATABASE_PASSWORD", "");
+//define("DATABASE_DB", "");
+
