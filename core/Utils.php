@@ -30,11 +30,18 @@ class Utils {
 
     /**
      * Escapes the given data for HTML printing
-     * @param string $data The data to be escaped
-     * @return string The escaped string
+     * @param array | string $data The data to be escaped
+     * @return string | array The escaped data
      */
-    public static function escapeData(string $data): string
+    public static function escapeData($data)
     {
-        return htmlspecialchars($data);
+        if (is_string($data)) {
+            return htmlspecialchars($data);
+        } else if (is_array($data)) {
+            foreach ($data as &$value) {
+                $value = self::escapeData($value);
+            }
+        }
+        return $data;
     }
 }

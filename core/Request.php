@@ -237,12 +237,16 @@ class Request
      * Sets a param to be sent to the view
      * @param string $param Param name
      * @param mixed $value Param value. If not set the param will be removed.
+     * @param bool $escape If the content should be escaped.
      */
-    public function setViewParam(string $param, $value = null): void
+    public function setViewParam(string $param, $value = null, bool $escape = false): void
     {
         if ($value === null) {
             unset($this->viewParams[$param]);
             return;
+        }
+        if ($escape) {
+            $value = Utils::escapeData($value);
         }
         $this->viewParams[$param] = $value;
     }
