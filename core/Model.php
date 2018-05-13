@@ -96,36 +96,40 @@ abstract class Model extends DB
         $query = "DELETE FROM " . $this->tableName;
         $values = [];
         if (!empty($matches)) {
-            $values = [];
-            $preparedChunks = [];
-            foreach ($matches as $column => $value) {
-                if (is_array($value)) {
-                    if (count($value) === 1) {
-                        if (isset($value[0])) {
-                            $preparedChunks[] = "$column LIKE ?";
-                            $values[] = $value[0];
-                        } else {
-                            $key = array_keys($value)[0];
-                            $preparedChunks[] = "$column BETWEEN ? AND ?";
-                            $values[] = $key;
-                            $values[] = $value[$key];
-                        }
-                    } else {
-                        $inClause = '(';
-                        foreach ($value as $columnValue) {
-                            $inClause .= '?, ';
-                            $values[] = $columnValue;
-                        }
-                        $inClause = rtrim($inClause, ', ');
-                        $inClause .= ')';
-                        $preparedChunks[] =  "$column IN $inClause";
+            $where = '';
+            foreach ($matches as $condition) {
+                if (!is_array($condition)) {
+                    //Found logical operator
+                    if ($condition === '(' || $condition === ')') {
+                        $where .= $condition;
+                    }  else {
+                        $where .= " $condition ";
                     }
                 } else {
-                    $preparedChunks[] = $column . ' = ?';
-                    $values[] = $value;
+                    //Compute query
+                    $column = $condition[0];
+                    $operand = strtoupper($condition[1]);
+                    $value = $condition[2];
+                    $where .= $column;
+                    if ($operand === 'BETWEEN') {
+                        $values[] = $value[0];
+                        $values[] = $value[1];
+                        $where .= " BETWEEN ? AND ?";
+                    } else if ($operand === 'IN') {
+                        $where .= " IN (";
+                        foreach ($value as $columnValue) {
+                            $where .= '?, ';
+                            $values[] = $columnValue;
+                        }
+                        $where = rtrim($where, ', ');
+                        $where .= ")";
+                    } else {
+                        $where .= " $operand $value";
+                        $values[] = $value;
+                    }
                 }
             }
-            $query .= " WHERE " . implode(' AND ', $preparedChunks);
+            $query .= " WHERE $where";
         }
         $result = $this->query($query, $values);
         return $result;
@@ -141,7 +145,9 @@ abstract class Model extends DB
      */
     public function findOne($value, $field = 'id', array $cols = [], array $orderBy = [])
     {
-        $result = $this->find([$field => $value], $cols, [], $orderBy, 1);
+        $result = $this->find([
+            [$field, '=', $value]
+        ], $cols, [], $orderBy, 1);
         if (!empty($result)) {
             return $result[0];
         }
@@ -183,35 +189,40 @@ abstract class Model extends DB
         }
         $values = [];
         if (!empty($matches)) {
-            $preparedChunks = [];
-            foreach ($matches as $column => $value) {
-                if (is_array($value)) {
-                    if (count($value) === 1) {
-                        if (isset($value[0])) {
-                            $preparedChunks[] = "$column LIKE ?";
-                            $values[] = $value[0];
-                        } else {
-                            $key = array_keys($value)[0];
-                            $preparedChunks[] = "$column BETWEEN ? AND ?";
-                            $values[] = $key;
-                            $values[] = $value[$key];
-                        }
-                    } else {
-                        $inClause = '(';
-                        foreach ($value as $columnValue) {
-                            $inClause .= '?, ';
-                            $values[] = $columnValue;
-                        }
-                        $inClause = rtrim($inClause, ', ');
-                        $inClause .= ')';
-                        $preparedChunks[] =  "$column IN $inClause";
+            $where = '';
+            foreach ($matches as $condition) {
+                if (!is_array($condition)) {
+                    //Found logical operator
+                    if ($condition === '(' || $condition === ')') {
+                        $where .= $condition;
+                    }  else {
+                        $where .= " $condition ";
                     }
                 } else {
-                    $preparedChunks[] = $column . ' = ?';
-                    $values[] = $value;
+                    //Compute query
+                    $column = $condition[0];
+                    $operand = strtoupper($condition[1]);
+                    $value = $condition[2];
+                    $where .= $column;
+                    if ($operand === 'BETWEEN') {
+                        $values[] = $value[0];
+                        $values[] = $value[1];
+                        $where .= " BETWEEN ? AND ?";
+                    } else if ($operand === 'IN') {
+                        $where .= " IN (";
+                        foreach ($value as $columnValue) {
+                            $where .= '?, ';
+                            $values[] = $columnValue;
+                        }
+                        $where = rtrim($where, ', ');
+                        $where .= ")";
+                    } else {
+                        $where .= " $operand $value";
+                        $values[] = $value;
+                    }
                 }
             }
-            $query .= ' WHERE ' . implode(' AND ', $preparedChunks);
+            $query .= " WHERE $where";
         }
         if (!empty($groupBy)) {
             $query .= ' GROUP BY ' . implode(', ', $groupBy);
@@ -285,35 +296,40 @@ abstract class Model extends DB
         }
         $query = "UPDATE " . $this->tableName . " SET " . implode(", ", $updateChunks);
         if (!empty($matches)) {
-            $preparedChunks = [];
-            foreach ($matches as $column => $value) {
-                if (is_array($value)) {
-                    if (count($value) === 1) {
-                        if (isset($value[0])) {
-                            $preparedChunks[] = "$column LIKE ?";
-                            $values[] = $value[0];
-                        } else {
-                            $key = array_keys($value)[0];
-                            $preparedChunks[] = "$column BETWEEN ? AND ?";
-                            $values[] = $key;
-                            $values[] = $value[$key];
-                        }
-                    } else {
-                        $inClause = '(';
-                        foreach ($value as $columnValue) {
-                            $inClause .= '?, ';
-                            $values[] = $columnValue;
-                        }
-                        $inClause = rtrim($inClause, ', ');
-                        $inClause .= ')';
-                        $preparedChunks[] =  "$column IN $inClause";
+            $where = '';
+            foreach ($matches as $condition) {
+                if (!is_array($condition)) {
+                    //Found logical operator
+                    if ($condition === '(' || $condition === ')') {
+                        $where .= $condition;
+                    }  else {
+                        $where .= " $condition ";
                     }
                 } else {
-                    $preparedChunks[] = $column . ' = ?';
-                    $values[] = $value;
+                    //Compute query
+                    $column = $condition[0];
+                    $operand = strtoupper($condition[1]);
+                    $value = $condition[2];
+                    $where .= $column;
+                    if ($operand === 'BETWEEN') {
+                        $values[] = $value[0];
+                        $values[] = $value[1];
+                        $where .= " BETWEEN ? AND ?";
+                    } else if ($operand === 'IN') {
+                        $where .= " IN (";
+                        foreach ($value as $columnValue) {
+                            $where .= '?, ';
+                            $values[] = $columnValue;
+                        }
+                        $where = rtrim($where, ', ');
+                        $where .= ")";
+                    } else {
+                        $where .= " $operand $value";
+                        $values[] = $value;
+                    }
                 }
             }
-            $query .= " WHERE " . implode(' AND ', $preparedChunks);
+            $query .= " WHERE $where";
         }
         return $this->query($query, $values);
     }
