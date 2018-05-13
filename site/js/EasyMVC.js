@@ -55,7 +55,7 @@ class EasyMVC {
         return url;
     }
 
-    static redirect(url) {
-        window.location = url;
+    static redirect(controller = '', action = '', parameters = []) {
+        window.location = this.getURL(controller, action, parameters);
     }
 }
