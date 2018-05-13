@@ -124,7 +124,7 @@ abstract class Model extends DB
                         $where = rtrim($where, ', ');
                         $where .= ")";
                     } else {
-                        $where .= " $operand $value";
+                        $where .= " $operand ?";
                         $values[] = $value;
                     }
                 }
@@ -217,7 +217,7 @@ abstract class Model extends DB
                         $where = rtrim($where, ', ');
                         $where .= ")";
                     } else {
-                        $where .= " $operand $value";
+                        $where .= " $operand ?";
                         $values[] = $value;
                     }
                 }
@@ -324,7 +324,7 @@ abstract class Model extends DB
                         $where = rtrim($where, ', ');
                         $where .= ")";
                     } else {
-                        $where .= " $operand $value";
+                        $where .= " $operand ?";
                         $values[] = $value;
                     }
                 }
