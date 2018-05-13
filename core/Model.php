@@ -34,7 +34,7 @@ abstract class Model extends DB
      * @param array $processed List of processed tables
      * @return string The JOIN query
      */
-    public function buildJoin(bool $append = false, array &$processed = []): string
+    private function buildJoin(bool $append = false, array &$processed = []): string
     {
         /**
          * @var $model Model

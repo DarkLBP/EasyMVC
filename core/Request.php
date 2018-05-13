@@ -67,6 +67,15 @@ class Request
     }
 
     /**
+     * Returns an array with all the action parameters
+     * @return array Action parameters
+     */
+    public function getActionParameters(): array
+    {
+        return $this->actionParameters;
+    }
+
+    /**
      * Gets the target controller name
      * @return string The controller name
      */
