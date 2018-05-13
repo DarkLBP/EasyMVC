@@ -36,13 +36,13 @@ class EasyMVC {
         return this.parameters;
     }
 
-    static redirect(controller = '', action = '', parameters = []) {
+    static getURL(controller = '', action = '', parameters = []) {
         let url = window.location.protocol + '//' + window.location.host + '/';
         if (controller.length > 0) {
             url += controller;
         }
         if (action.length > 0) {
-            url +=  '/' + action;
+            url += '/' + action;
         }
         if (parameters.length > 0) {
             if (action.length === 0) {
@@ -52,6 +52,10 @@ class EasyMVC {
                 url += '/' + parameters[i];
             }
         }
+        return url;
+    }
+
+    static redirect(url) {
         window.location = url;
     }
 }
