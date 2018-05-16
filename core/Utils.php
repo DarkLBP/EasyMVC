@@ -11,7 +11,7 @@ class Utils {
      * @return string The generated URL
      */
     public static function getURL(string $controller = '', string $action = '', array $params = []) {
-        $url = ($_SERVER["HTTPS"] ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . '/';
+        $url = (!empty($_SERVER["HTTPS"]) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . '/';
         if (!empty($controller)) {
             $url .= "$controller";
         }
